@@ -42,6 +42,7 @@ var opts struct {
 	submissionsLookup bool
 	terse             bool
 	tlsOnConnect      bool
+	forceECDSA        bool
 }
 
 type programStatus struct {

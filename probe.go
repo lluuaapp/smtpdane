@@ -281,10 +281,24 @@ func (vc *validationContext) probeAddr() {
 
 func (vc *validationContext) probeConnectedAddr(conn net.Conn) {
 	verifier, chCertDetails := peerCertificateVerifierFor(vc)
+
+	var suites []uint16 = nil
+	if opts.forceECDSA {
+		suites = []uint16{
+			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA}
+	}
+
 	tlsConfig := &tls.Config{
 		ServerName:            vc.hostname,
 		InsecureSkipVerify:    true, // we verify ourselves in the VerifyPeerCertificate
 		VerifyPeerCertificate: verifier,
+		CipherSuites:          suites,
 	}
 
 	if opts.tlsOnConnect {
